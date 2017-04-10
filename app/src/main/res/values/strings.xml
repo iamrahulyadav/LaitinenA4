@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">LaitinenA4</string>
+    <string name="action_settings">Settings</string>
+    <string name="number_of_choices">Number of Choices</string>
+    <string name="number_of_choices_description">Display 2 or 4 guess buttons</string>
+    <string name="animal_types">Animal Types</string>
+    <string name="animal_types_description">Animal types to include in the quiz</string>
+    <string name="results">%1$d guesses, %2$.02f%% correct</string>
+    <string name="incorrect_answer">Incorrect!</string>
+    <string name="default_animal_type_message">One animal type must be selected. Setting domestic as the default animal type.</string>
+    <string name="restarting_quiz">Quiz will restart with your new settings</string>
+    <string name="question">Question %1$d of %2$d</string>
+    <string name="reset_quiz">Reset Quiz</string>
+    <string name="image_description">Image of the current animal in the quiz</string>
+    <string name="default_type">Domestic</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="guess_animal">Guess Animal</string>
+    <string name="sound_title">Sound On/Off</string>
+    <string name="sound_description">Set sound on or off.</string>
+</resources>
