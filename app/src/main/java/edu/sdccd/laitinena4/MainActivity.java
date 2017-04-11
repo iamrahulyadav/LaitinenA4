@@ -20,9 +20,10 @@ public class MainActivity extends AppCompatActivity {
     // keys for reading data from SharedPreferences
     public static final String CHOICES = "pref_numberOfChoices";
     public static final String TYPES = "pref_typesToInclude";
+    public static final String SOUND = "pref_soundOnOff";
+    public static final String QUESTIONS = "pref_nOfQuestions";
 
     private boolean phoneDevice = true; // used to force potrait mode
-    private boolean appStarted = true; // app just started
     private boolean preferencesChanged = true; // did preferences change
 
     @Override
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         // if app just started, show view with Play button
         if (preferencesChanged == true ) {
 
-            appStarted = false; // don't need this flag anymore
             preferencesChanged = false; // don't need this flag anymore
 
             //startFragment
@@ -75,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
             guessFragment.updateGuessRows(
                     PreferenceManager.getDefaultSharedPreferences(this));
             guessFragment.updateTypes(
+                    PreferenceManager.getDefaultSharedPreferences(this));
+            guessFragment.updateSound(
+                    PreferenceManager.getDefaultSharedPreferences(this));
+            guessFragment.updatenOfQuestions(
                     PreferenceManager.getDefaultSharedPreferences(this));
 
             guessFragment.resetQuiz();
@@ -143,6 +147,12 @@ public class MainActivity extends AppCompatActivity {
                                     R.string.default_animal_type_message,
                                     Toast.LENGTH_SHORT).show();
                         }
+                    }
+                    else if (key.equals(SOUND)) {
+                        quizFragment.updateSound(sharedPreferences);
+                    }
+                    else if (key.equals(QUESTIONS)) {
+                        quizFragment.updatenOfQuestions(sharedPreferences);
                     }
 
                     Toast.makeText(MainActivity.this,

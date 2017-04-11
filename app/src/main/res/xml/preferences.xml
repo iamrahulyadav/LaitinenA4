@@ -23,10 +23,19 @@
     <ListPreference
         android:entries="@array/sound_on_off"
         android:entryValues="@array/sound_on_off"
-        android:key="pref_sound"
+        android:key="pref_soundOnOff"
         android:title="@string/sound_title"
         android:summary="@string/sound_description"
         android:persistent="true"
-        android:defaultValue="1" />
+        android:defaultValue="On" />
+
+    <ListPreference
+        android:entries="@array/number_of_questions"
+        android:entryValues="@array/number_of_questions"
+        android:key="pref_nOfQuestions"
+        android:title="@string/questions_title"
+        android:summary="@string/questions_summary"
+        android:persistent="true"
+        android:defaultValue="10" />
 
 </PreferenceScreen>

@@ -17,4 +17,6 @@
     <string name="guess_animal">Guess Animal</string>
     <string name="sound_title">Sound On/Off</string>
     <string name="sound_description">Set sound on or off.</string>
+    <string name="questions_title">Number of Questions</string>
+    <string name="questions_summary">Set number of questions.</string>
 </resources>

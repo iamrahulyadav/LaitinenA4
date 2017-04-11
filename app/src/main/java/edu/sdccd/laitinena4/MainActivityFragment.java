@@ -54,7 +54,7 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
     //String used for logging error messages
     private static final String TAG = "AnimalQuiz Activity";
 
-    private static final int ANIMALS_IN_QUIZ = 2;
+    //private static final int ANIMALS_IN_QUIZ = 2;
 
     private List<String> fileNameList; // animal file names
     private List<String> quizAnimalsList; // animals in current quiz
@@ -66,6 +66,7 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
     private SecureRandom random; // used to randomize the quiz
     private Handler handler; // used to delay loading next picture
     private Animation shakeAnimation; // animation for incorrect guess
+    private Animation bounceAnimation; // animation for correct guess
 
     private LinearLayout quizLinearLayout; // layout that contains the quiz
     private TextView questionNumberTextView; // shows current question #
@@ -79,6 +80,9 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
     private boolean loaded = false;
     String soundName;
     public static final Semaphore semaphore = new Semaphore(0);
+    private boolean soundOn = true;
+    private static final String wrong = "wrong";
+    private int numberOfQuestions = 10;
 
     //MainActivityFragment View is created and configured
     @Override
@@ -109,7 +113,6 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
 
         //load wrong sound to soundPool
         animalSoundMap = new HashMap();
-        loadSoundToSoundPool("wrong");
 
         //addSoundsToSoundPool();
 
@@ -117,6 +120,10 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
         shakeAnimation = AnimationUtils.loadAnimation(getActivity(),
                 R.anim.incorrect_shake);
         shakeAnimation.setRepeatCount(3); // animation repeats 3 times
+
+        bounceAnimation = AnimationUtils.loadAnimation(getActivity(),
+                R.anim.correct_shake);
+        bounceAnimation.setRepeatCount(3); // animation repeats 3 times
 
         // get references to GUI components
         quizLinearLayout =
@@ -141,7 +148,7 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
 
         // set questionNumberTextView's text
         questionNumberTextView.setText(
-                getString(R.string.question, 1, ANIMALS_IN_QUIZ));
+                getString(R.string.question, 1, numberOfQuestions));
         return view; // return the fragment's view for display
 
 
@@ -283,13 +290,13 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
 
         correctAnswers = 0; // reset the number of correct answers made
         totalGuesses = 0; // reset the total number of guesses the user made
-        quizAnimalsList.clear(); // clear prior list of quiz countries
+        quizAnimalsList.clear(); // clear prior list of quiz animals
 
         int animalCounter = 1;
         int numberOfAnimals = fileNameList.size();
 
-        // add ANIMALS_IN_QUIZ random file names to the quizCountriesList
-        while (animalCounter <= ANIMALS_IN_QUIZ) {
+        // add ANIMALS_IN_QUIZ random file names to the quizAnimalsList
+        while (animalCounter <= numberOfQuestions) {
             int randomIndex = random.nextInt(numberOfAnimals);
 
             // get the random file name
@@ -307,14 +314,18 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
 
     // after the user guesses a correct animal, load the next animal
     private void loadNextAnimal() {
+
+        String nextImage = null;
+
         // get file name of the next animal and remove it from the list
-        String nextImage = quizAnimalsList.remove(0);
+        nextImage = quizAnimalsList.remove(0);
         correctAnswer = nextImage; // update the correct answer
+
         answerTextView.setText(""); // clear answerTextView
 
         // display current question number
         questionNumberTextView.setText(getString(
-                R.string.question, (correctAnswers + 1), ANIMALS_IN_QUIZ));
+                R.string.question, (correctAnswers + 1), numberOfQuestions));
 
         // extract the animal type from the next image's name
         String type = nextImage.substring(0, nextImage.indexOf('-'));
@@ -426,6 +437,10 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
             ++totalGuesses; // increment number of guesses the user has made
 
             if (guess.equals(answer)) { // if the guess is correct
+
+                //answer was correct, play animation
+                guessButton.setAnimation(bounceAnimation);
+
                 ++correctAnswers; // increment the number of correct answers
 
                 // display correct answer in green text
@@ -438,12 +453,14 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
 
                 //play sound of animal
                 //first load to memory
-                loadSoundToSoundPool(answer.toLowerCase());
-                playSound(answer.toLowerCase());
+                if (soundOn == true) {
+                    loadSoundToSoundPool(answer.toLowerCase());
+                    playSound(answer.toLowerCase());
+                }
 
 
                 // if the user has correctly identified ANIMALS_IN_QUIZ animals
-                if (correctAnswers == ANIMALS_IN_QUIZ) {
+                if (correctAnswers == numberOfQuestions) {
                     // DialogFragment to display quiz stats and start new quiz
                     MyResultDialogFragment quizResults = MyResultDialogFragment.newInstance(
                             totalGuesses, correctAnswers);
@@ -477,6 +494,7 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
                                 }
                             }, 2000); // 2000 milliseconds for 2-second delay
                 }
+
             }
             else { // answer was incorrect
                 animalImageView.startAnimation(shakeAnimation); // play shake
@@ -493,8 +511,11 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
                     //wait loading
                 //}
                 loaded = false;
-                playSound("wrong");
 
+                if (soundOn == true) {
+                    loadSoundToSoundPool(wrong);
+                    playSound(wrong);
+                }
 
                 // display "Incorrect!" in red
                 //answerTextView.setText(R.string.incorrect_answer);
@@ -518,6 +539,25 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
     public void doPositiveClick() {
 
         resetQuiz();
+    }
+
+    public void updateSound(SharedPreferences sharedPreferences) {
+
+        String soundOnOff =
+                sharedPreferences.getString(MainActivity.SOUND, null);
+
+        if (soundOnOff.equals("On")) {
+            this.soundOn = true;
+        }
+        else {
+            this.soundOn = false;
+        }
+    }
+
+    public void updatenOfQuestions(SharedPreferences sharedPreferences) {
+        this.numberOfQuestions = Integer.parseInt(
+                sharedPreferences.getString(MainActivity.QUESTIONS, null));
+
     }
 }
 
