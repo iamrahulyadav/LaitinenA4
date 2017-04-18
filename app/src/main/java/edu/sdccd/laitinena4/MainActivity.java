@@ -30,16 +30,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         // set default values in the app's SharedPreferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        // register listener for SharedPreferences changes
-        PreferenceManager.getDefaultSharedPreferences(this).
-                registerOnSharedPreferenceChangeListener(
-                        preferencesChangeListener);
 
         // determine screen size
         int screenSize = getResources().getConfiguration().screenLayout &
@@ -62,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        // if app just started, show view with Play button
         if (preferencesChanged == true ) {
 
             preferencesChanged = false; // don't need this flag anymore
@@ -85,79 +77,4 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-    // show menu if app is running on a phone or a portrait-oriented tablet
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // get the device's current orientation
-        int orientation = getResources().getConfiguration().orientation;
-
-        // display the app's menu only in portrait orientation
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // inflate the menu
-            getMenuInflater().inflate(R.menu.menu_main, menu);
-            return true;
-        }
-        else
-            return false;
-    }
-
-    // displays the SettingsActivity when running on a phone
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent preferencesIntent = new Intent(this, SettingsActivity.class);
-        startActivity(preferencesIntent);
-        return super.onOptionsItemSelected(item);
-    }
-
-    // listener for changes to the app's SharedPreferences
-    private OnSharedPreferenceChangeListener preferencesChangeListener =
-            new OnSharedPreferenceChangeListener() {
-                // called when the user changes the app's preferences
-                @Override
-                public void onSharedPreferenceChanged(
-                        SharedPreferences sharedPreferences, String key) {
-                    preferencesChanged = true; // user changed app setting
-
-                    MainActivityFragment quizFragment = (MainActivityFragment)
-                            getSupportFragmentManager().findFragmentById(
-                                    R.id.guessFragment);
-
-                    if (key.equals(CHOICES)) { // # of choices to display changed
-                        quizFragment.updateGuessRows(sharedPreferences);
-                        quizFragment.resetQuiz();
-                    }
-                    else if (key.equals(TYPES)) { // regions to include changed
-                        Set<String> types =
-                                sharedPreferences.getStringSet(TYPES, null);
-
-                        if (types != null && types.size() > 0) {
-                            quizFragment.updateTypes(sharedPreferences);
-                            quizFragment.resetQuiz();
-                        }
-                        else {
-                            // must select one region--set North America as default
-                            SharedPreferences.Editor editor =
-                                    sharedPreferences.edit();
-                            types.add(getString(R.string.default_type));
-                            editor.putStringSet(TYPES, types);
-                            editor.apply();
-
-                            Toast.makeText(MainActivity.this,
-                                    R.string.default_animal_type_message,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    else if (key.equals(SOUND)) {
-                        quizFragment.updateSound(sharedPreferences);
-                    }
-                    else if (key.equals(QUESTIONS)) {
-                        quizFragment.updatenOfQuestions(sharedPreferences);
-                    }
-
-                    Toast.makeText(MainActivity.this,
-                            R.string.restarting_quiz,
-                            Toast.LENGTH_SHORT).show();
-                }
-            };
 }

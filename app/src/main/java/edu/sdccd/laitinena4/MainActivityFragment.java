@@ -66,7 +66,7 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
     private SecureRandom random; // used to randomize the quiz
     private Handler handler; // used to delay loading next picture
     private Animation shakeAnimation; // animation for incorrect guess
-    private Animation bounceAnimation; // animation for correct guess
+    private Animation correctAnimation; // animation for correct guess
 
     private LinearLayout quizLinearLayout; // layout that contains the quiz
     private TextView questionNumberTextView; // shows current question #
@@ -121,9 +121,9 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
                 R.anim.incorrect_shake);
         shakeAnimation.setRepeatCount(3); // animation repeats 3 times
 
-        bounceAnimation = AnimationUtils.loadAnimation(getActivity(),
+        correctAnimation = AnimationUtils.loadAnimation(getActivity(),
                 R.anim.correct_shake);
-        bounceAnimation.setRepeatCount(3); // animation repeats 3 times
+        correctAnimation.setRepeatCount(1); // animation repeats 1 time
 
         // get references to GUI components
         quizLinearLayout =
@@ -230,7 +230,6 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
     /**
      * Plays the sound
      */
-    //public void playSound(int id, final Context context) {
     public void playSound(String name) {
 
         //Log.d("Sound", "Play GameSound " + id + 1 + ".");
@@ -439,7 +438,8 @@ public class MainActivityFragment extends Fragment implements CustomFieldsFragme
             if (guess.equals(answer)) { // if the guess is correct
 
                 //answer was correct, play animation
-                guessButton.setAnimation(bounceAnimation);
+                //guessButton.setAnimation(bounceAnimation);
+                animalImageView.startAnimation(correctAnimation); // rotate
 
                 ++correctAnswers; // increment the number of correct answers
 
